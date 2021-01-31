@@ -79,8 +79,9 @@ def send_reply_to(obj):
 def is_comment_based(comment: Comment) -> bool:
         body = str(comment.body).lower().split()
         for i, w in enumerate(body):
-                if w == "based" and body[i+1] not in PREPOSITIONS:
-                        return True
+                if w == "based" and i+1 < len(body):
+                        if body[i+1] not in PREPOSITIONS:
+                                return True
         return False
 
 
@@ -88,11 +89,13 @@ def is_post_based(post: Submission) -> bool:
         body = str(post.selftext).lower()
         title = str(post.title).lower()
         for i, w in enumerate(title):
-                if w == "based" and body[i+1] not in PREPOSITIONS:
-                        return True
+                if w == "based" and i+1 < len(body):
+                        if body[i+1] not in PREPOSITIONS:
+                                return True
         for i, w in enumerate(body):
-                if w == "based" and body[i+1] not in PREPOSITIONS:
-                        return True
+                if w == "based" and i+1 < len(body):
+                        if body[i+1] not in PREPOSITIONS:
+                                return True
         return False
 
 
