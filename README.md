@@ -1,0 +1,1 @@
+A reddit bot that replies "Based? Based on what?" to every occurence of "based" not followed by a preposition (e.g. based on, based in) and not immediately preceded by a hyphen (e.g. animal-based) in posts and comments of given subreddits. 
