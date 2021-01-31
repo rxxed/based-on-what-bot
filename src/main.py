@@ -4,6 +4,7 @@ import os
 import threading
 import logging
 from urllib.parse import quote_plus
+from typing import Callable
 
 import praw
 from praw.models import Submission, Subreddit, Comment
@@ -33,6 +34,21 @@ reddit = praw.Reddit(
 )
 
 
+def restart(handler: Callable):
+        """
+        Decorator that restarts threads if they fail
+        """
+        def wrapped_handler(*args, **kwargs):
+                logger.info("Starting thread with: %s", args)
+                while True:
+                        try:
+                                handler(*args, **kwargs)
+                        except Exception as e:
+                                logger.error("Exception: %s", e)
+        return wrapped_handler
+
+
+@restart
 def iterate_comments(sub_name):
         sub = reddit.subreddit(sub_name)
         for comment in sub.stream.comments():
@@ -44,6 +60,7 @@ def iterate_comments(sub_name):
                         print(f"Comment ignored: {str(comment.body)}")
 
 
+@restart
 def iterate_posts(sub_name):
         sub = reddit.subreddit(sub_name)
         for post in sub.stream.submissions():
@@ -80,6 +97,7 @@ def is_post_based(post: Submission) -> bool:
 
 
 def main():
+        logger.info("Main       : Creating threads")
         threads = []
         posts_thread = threading.Thread(
                 target=iterate_posts, args=("4chan",), name="posts"
@@ -91,6 +109,7 @@ def main():
         threads.append(posts_thread)
         threads.append(comments_thread)
 
+        logger.info("Main       : Starting threads")
         for thread in threads:
                 thread.start()
 
